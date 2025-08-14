@@ -1,0 +1,2862 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Übergabeprotokoll</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23315082'/><text x='50' y='35' font-family='Arial' font-size='16' fill='white' text-anchor='middle'>HAUS</text><text x='50' y='55' font-family='Arial' font-size='12' fill='white' text-anchor='middle'>ABNAHME</text><text x='50' y='75' font-family='Arial' font-size='10' fill='white' text-anchor='middle'>PROTOKOLL</text></svg>">
+    <link rel="stylesheet" href="stylestablet.css">
+    <script src="limittextfields.js"></script>
+    <script src="farbe.js" defer></script>
+    <script src="boden.js" defer></script>
+
+    <script src="rwm.js" defer></script>
+    <script src="addrow.js" defer></script>
+    <script src="addbilder.js" defer></script>
+    <script src="addkeys.js"></script>
+    <script src="addzaehler.js"></script>
+    <script src="togglerooms.js"></script>
+    <script src="stylechange.js"></script>
+    <script src="immo.js"></script>
+    <script src="addeintenant.js"></script>
+    <script src="addaustenant.js"></script>
+    <script src="addzimmer.js"></script>
+    <script src="validstreet.js"></script>
+    <script src="script1.js"></script>
+    <script src="suggestion.js"></script>
+    <script src="screenshot.js"></script>
+    <!-- <script src="importexport.js"></script> -->
+    <script src="saveloadlocal.js"></script>
+    <script src="loadhint.js"></script>
+    <script src="email.js"></script>
+    <script src="musterdaten.js"></script>
+    <script src="saveloadlocalbilder.js"></script>
+    <!-- <script src="keyboard-persistence.js" defer></script> -->
+    <script src="roomNavigation.js" defer></script>
+    <script src="responsiveFix.js" defer></script>
+    <!--     <script src="draw.js"></script> -->
+    <!-- <script src="draw-test.js"></script> -->
+    <!--  <script src="toggleroomsoptic.js"></script> -->
+    <!-- <script src="autosave.js"></script> -->
+
+
+
+</head>
+
+<body>
+    <div class="container">
+
+        <div class="sticky">
+            <button id="openMenuModal" class="button menu-trigger">
+                <i class="fas fa-bars"></i>
+                <span class="button-text">Menü</span>
+            </button>
+
+
+
+            <!-- Neue Radio-Button-Gruppe für Ansichtsänderung -->
+            <div class="view-selector">
+                <div class="radio-group">
+
+                    <input type="radio" id="tabletView" name="viewStyle" value="stylestablet.css">
+                    <label for="tabletView">
+                        <i class="fas fa-tablet-alt"></i>
+                        <span>PC / Tablet</span>
+                    </label>
+
+                    <input type="radio" id="desktopView" name="viewStyle" value="stylesdesktop.css" checked>
+                    <label for="desktopView">
+                        <i class="fas fa-desktop"></i>
+                        <span>Mieteransicht</span>
+                    </label>
+
+                    <input type="radio" id="pdfView" name="viewStyle" value="stylespdf.css">
+                    <label for="pdfView">
+                        <i class="fas fa-file-pdf"></i>
+                        <span>PDF-Ansicht (Entwickler)</span>
+                    </label>
+                </div>
+            </div>
+
+
+
+            <div id="imageCounterWidget" style="display:inline-block !important;
+            position:relative !important;
+            z-index:9999 !important;
+            background:#466c9c !important;
+            color:white !important;
+            padding:10px 15px !important;
+            margin:0 15px !important;
+            border-radius:7px !important;
+             border:none !important;
+                       text-align:center !important;">
+                <div style="display:block !important;">
+                    <i class="fas fa-images"
+                        style="display:block !important; margin:0 auto 5px auto !important; font-size:16px !important;"></i>
+                    <span id="imageCountDisplay" style="display:block !important;">0/7 Bilder</span>
+                </div>
+            </div>
+
+
+
+            <div class="development">
+                <div class="development-toggle" onclick="toggleDevelopmentDropdown()">
+
+
+                </div>
+
+                <div class="development-dropdown" id="developmentDropdown">
+                    <button class="development-item" onclick="loadMusterdaten(); closeDevelopmentDropdown();">
+                        <i class="fas fa-images"></i>
+                        Musterdaten
+                    </button>
+
+                    <button class="development-item"
+                        onclick="showClearLocalStorageModal(); closeDevelopmentDropdown();">
+                        <i class="fas fa-database"></i>
+                        LocalStorage öffnen
+                    </button>
+
+                    <button class="development-item" onclick="showClearIndexedDBModal(); closeDevelopmentDropdown();">
+                        <i class="fas fa-images"></i>
+                        IndexedDB öffnen
+                    </button>
+                </div>
+            </div>
+
+
+
+
+
+        </div>
+
+        <div class="room-navigation" id="roomNavigation">
+            <div class="room-nav-container">
+                <button class="room-nav-btn active" onclick="scrollToSection('allgemein')">
+                    <i class="fas fa-info-circle"></i>
+                    Allgemein
+                </button>
+                <button class="room-nav-btn" onclick="scrollToSection('kueche')">
+                    <i class="fas fa-utensils"></i>
+                    Küche
+                </button>
+                <button class="room-nav-btn" onclick="scrollToSection('bad')">
+                    <i class="fas fa-bath"></i>
+                    Bad
+                </button>
+                <button class="room-nav-btn" onclick="scrollToSection('wc')">
+                    <i class="fas fa-toilet"></i>
+                    WC
+                </button>
+                <button class="room-nav-btn" onclick="scrollToSection('flur')">
+                    <i class="fas fa-door-open"></i>
+                    Flur
+                </button>
+                <button class="room-nav-btn" onclick="scrollToSection('abstellraum')">
+                    <i class="fas fa-box"></i>
+                    Abstellraum
+                </button>
+                <button class="room-nav-btn" onclick="scrollToSection('nebenraum')">
+                    <i class="fas fa-door-closed"></i>
+                    Nebenraum
+                </button>
+                <!-- Zimmer-Buttons werden hier dynamisch eingefügt -->
+                <button class="room-nav-btn" onclick="scrollToSection('regelungen')">
+                    <i class="fas fa-gavel"></i>
+                    Regelungen
+                </button>
+                <button class="room-nav-btn" onclick="scrollToSection('weiterebemerkungen')">
+                    <i class="fas fa-comment"></i>
+                    Bemerkungen
+                </button>
+                <button class="room-nav-btn" onclick="scrollToSection('unterschriften')">
+                    <i class="fas fa-signature"></i>
+                    Unterschriften
+                </button>
+            </div>
+        </div>
+
+        <!-- Modal für Zeichen-Limit Warnung -->
+        <div id="bemerkungLimitModal" class="bemerkung-modal-overlay" style="display: flex;">
+            <div class="bemerkung-modal-content">
+                <div class="bemerkung-modal-header">
+                    <h3></h3>
+                    <button class="bemerkung-modal-close-btn" type="button" id="bemerkungModalCloseBtn">&times;</button>
+                </div>
+                <div class="bemerkung-modal-body">
+                    <div class="bemerkung-limit-warning-icon">⚠️</div>
+                    <p><strong>80 Zeichen</strong> für diese Bemerkungszeile erreicht</p><br>
+                    <p>Bitte weitere Bemerkungszeile hinzufügen</p>
+                </div>
+                <div class="bemerkung-modal-footer">
+                    <button class="bemerkung-btn-primary" type="button" id="bemerkungModalOkBtn">weiter</button>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Menu Modal -->
+        <div id="menuModal" class="modal-overlay">
+            <div class="modal-container">
+                <div class="modal-header">
+                    <h3 class="modal-title">
+                        <i class="fas fa-bars"></i>
+                        Hauptmenü
+                    </h3>
+                    <button id="closeMenuModal" class="modal-close">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+
+                <div class="modal-content">
+                    <div class="menu-grid">
+                        <!-- Hauptfunktionen -->
+                        <div class="menu-section">
+                            <h4 class="section-title">Aktionen</h4>
+                            <button id="savelocal" class="menu-item-button">
+                                <i class="fas fa-save"></i>
+                                <span>Zwischenspeichern</span>
+                            </button>
+                            <button id="loadlocal" class="menu-item-button">
+                                <i class="fas fa-folder-open"></i>
+                                <span>Laden</span>
+                            </button>
+                            <button id="screenshot" class="menu-item-button">
+                                <i class="fas fa-file-pdf"></i>
+                                <span>PDF erstellen</span>
+                            </button>
+                            <button id="mail" class="menu-item-button">
+                                <i class="fas fa-envelope"></i>
+                                <span>E-Mail öffnen</span>
+                            </button>
+                        </div>
+
+                        <div class="menu-section">
+                            <h4 class="section-title">Datenverwaltung</h4>
+
+
+                            <button id="import" class="menu-item-button">
+                                <i class="fas fa-file-import"></i>
+                                <span>Import (ohne Bilder)</span>
+                            </button>
+                            <button id="delete" class="menu-item-button danger">
+                                <i class="fas fa-trash"></i>
+                                <span>alle aktuellen Formulareingaben löschen</span>
+                            </button>
+                            <button id="export" class="menu-item-button grey">
+                                <i class="fas fa-file-export"></i>
+                                <span>Daten für anderes Gerät exportieren (ohne Bilder)</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <div class="allgemein" id="allgemein">
+
+            <div class="haus">
+                <i class="fas fa-home"></i>
+                <h2 style="font-size:30px;">Abnahme- / Übergabeprotokoll</h2>
+                <img src="https://raw.githubusercontent.com/constructorable/Protokoll/3cfd7bbd9e39904b3f023f731c96ed52f96f4e65/Logo.JPG"
+                    alt="Sauer Immobilien GmbH">
+            </div>
+
+            <div class="objektdaten" id="objektdaten">
+                <table>
+                    <colgroup>
+                        <col style="width: 18%"> <!-- Label-Spalte -->
+                        <col style="width: 32%"> <!-- Eingabefeld-Spalte -->
+                        <col style="width: 20%"> <!-- Label-Spalte 2 -->
+                        <col style="width: 30%"> <!-- Eingabefeld-Spalte 2 -->
+                    </colgroup>
+                    <tbody>
+                        <!-- 1. Zeile: Protokollart (2 Spalten) -->
+                        <tr>
+                            <td>Art des Protokolls:</td>
+                            <td colspan="3">
+                                <select id="protokollart1" class="full-width">
+                                    <option>-</option>
+                                    <option>Abnahme (Auszug)</option>
+                                    <option>Übergabe (Einzug)</option>
+                                    <option>Abnahme- &amp; Übergabe (Ein- und Auszug)</option>
+                                </select>
+                            </td>
+                        </tr>
+
+                        <!-- 2. Zeile: Mieternummer + Lage -->
+                        <tr>
+                            <td>Mieternummer</td>
+                            <td class="suggestion-container">
+                                <input type="text" id="mieterid" class="textinput suggestion-input">
+                                <div id="mieterSuggestions" class="suggestion-list"></div>
+                            </td>
+                            <td>Lage / Stockwerk</td>
+                            <td>
+                                <input id="lageeinzug2" type="text" class="textinput">
+                            </td>
+                        </tr>
+
+                        <!-- 3. Zeile: PLZ + Datum -->
+                        <tr>
+                            <td>PLZ / Ort</td>
+                            <td>
+                                <input type="text" id="plzeinzug" class="textinput">
+                            </td>
+                            <td>Datum</td>
+                            <td>
+                                <input id="datum" type="date" class="textinput">
+                            </td>
+                        </tr>
+
+                        <!-- 4. Zeile: Objekt/Straße -->
+                        <tr>
+                            <td>Objekt / Straße</td>
+                            <td colspan="3" class="suggestion-container">
+                                <input id="strasseeinzug" type="text" class="textinput suggestion-input">
+                                <div id="strasseSuggestions" class="suggestion-list"></div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="tenant" id="einzugtenantcontainer">
+                <button id="einzugtenant"><i class="fas fa-user"></i>+ Mieter Einzug</button>
+            </div>
+
+            <div class="tenant" id="auszugtenantconatainer">
+                <button id="auszugtenant"><i class="fas fa-user"></i>+ Mieter Auszug</button>
+            </div>
+
+            <div class="keys" id="keys">
+                <button id="keysbtn"><i class="fas fa-key" aria-hidden="true"></i>+ Schlüssel</button>
+            </div>
+
+            <div class="zahlercontainer" id="addzaehler">
+                <button id="addzaehlerbtn"><i class="fas fa-tachometer-alt"></i>+ Zähler</button>
+            </div>
+
+
+
+
+
+
+            <div class="heatwater" id="heatwater">
+
+                <table style="width: 100%; border-collapse: collapse;">
+                    <tbody>
+                        <tr>
+
+                            <td
+                                style="width: 15%; text-align: right; padding: 8px 10px; vertical-align: middle; white-space: nowrap; font-weight:600;">
+                                <i style="margin-right: 10px;" class="fas fa-fire"></i>
+                                Heizung
+                            </td>
+
+
+
+
+                            <td
+                                style="width: 15%; text-align: right; padding: 8px 10px; vertical-align: middle; white-space: nowrap; font-weight:600;">
+                                <i style="margin-right: 10px;" class="fas fa-faucet"></i>
+                                Warmwasser
+                            </td>
+
+                        </tr>
+                    </tbody>
+                </table>
+
+
+                <table style="width: 100%; border-collapse: collapse;">
+                    <tbody>
+                        <tr>
+
+
+
+                            <td style="width: 35%; padding: 8px 10px;">
+                                <div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center;">
+
+                                    <label style="display: flex; align-items: center; gap: 5px;">
+
+                                        <input type="checkbox" name="heat_zentral" value="zentral" id="heatzent">
+                                        zentral
+                                    </label>
+
+                                    <label style="display: flex; align-items: center; gap: 5px;">
+                                        <input type="checkbox" name="heat_dezentral" value="dezentral" id="heatdezen">
+                                        dezentral
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td style="width: 35%; padding: 8px 10px;">
+                                <div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center;">
+                                    <label style="display: flex; align-items: center; gap: 5px;">
+                                        <input type="checkbox" name="water_zentral" value="zentral" id="watazent">
+                                        zentral
+                                    </label>
+                                    <label style="display: flex; align-items: center; gap: 5px;">
+                                        <input type="checkbox" name="water_dezentral" value="dezentral" id="watadezent">
+                                        dezentral
+                                    </label>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+
+
+
+        </div>
+
+
+
+        <div class="allrooms" id="allrooms">
+
+
+            <div class="room-toggle" data-room="kueche">
+                <div class="toggle-header">
+                    Küche vorhanden?
+                    <div class="toggle-options" data-active-option="0">
+                        <div class="toggle-option active" data-value="nein">Nein</div>
+                        <div class="toggle-option" data-value="ja">Ja</div>
+                    </div>
+                </div>
+
+                <div class="room-container" id="kueche-container"
+                    style="animation: 0.3s ease-in-out fadeOut; display: none;">
+                    <div class="table-container kueche" id="kueche-container">
+
+                        <table>
+
+
+                            <thead>
+                                <tr>
+                                    <th colspan="6" class="kueche-header">
+                                        <div class="kueche-verfuegbar">
+                                            Küche
+                                        </div>
+                                    </th>
+                                </tr>
+
+                                <tr class="kuecheheader">
+                                    <th class="aak">allgemeiner Zustand</th>
+                                    <th class="aak">in Ordnung</th>
+                                    <th class="aak">neuwertig</th>
+                                    <th class="aak">geringe Gebrauchs - spuren</th>
+                                    <th class="aak">stärkerer Gebrauchs - spuren</th>
+                                    <th class="aak">nicht renoviert</th>
+                                </tr>
+
+                                <tr>
+                                    <td></td>
+                                    <td><input type="checkbox" id="004"></td>
+                                    <td><input type="checkbox" id="005"></td>
+                                    <td><input type="checkbox" id="006"></td>
+                                    <td><input type="checkbox" id="007"></td>
+                                    <td><input type="checkbox" id="008"></td>
+                                </tr>
+
+
+
+
+                                <tr>
+                                    <th class="aak2"></th>
+                                    <th class="aak2">in Ordnung</th>
+                                    <th class="aak2">geringe Gebrauchs - spuren</th>
+                                    <th class="aak2">repa. - bedürftig</th>
+                                    <th class="aak2">Reparatur durch den Mieter oder Vermieter</th>
+                                    <th class="aak2">nicht vor handen</th>
+                                </tr>
+                            </thead>
+
+
+
+
+                            <tbody>
+                                <tr>
+                                    <td>Tür / Zarge / Beschläge</td>
+                                    <td><input type="checkbox" id="009"></td>
+                                    <td><input type="checkbox" id="010"></td>
+                                    <td><input type="checkbox" id="011"></td>
+                                    <td>
+                                        <select id="0001">
+                                            <option value="na" id="012">-</option>
+                                            <option value="mieter" id="013">Mieter</option>
+                                            <option value="landl" id="014">Vermieter</option>
+                                            <option value="klar" id="015">in Klärung</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="checkbox" id="016"></td>
+                                </tr>
+
+                                <tr>
+                                    <td>Zimmerschlüssel vorhanden?</td>
+                                    <td><input type="checkbox" id="keyYes1"></td>
+                                    <td class="color1">ja</td>
+                                    <td><input type="checkbox" id="keyNo1"></td>
+                                    <td class="color1">nein</td>
+                                    <td></td>
+                                </tr>
+
+
+                                <tr>
+                                    <td>Fenster / Beschläge / Glas</td>
+                                    <td><input type="checkbox" id="019"></td>
+                                    <td><input type="checkbox" id="020"></td>
+                                    <td><input type="checkbox" id="021"></td>
+                                    <td>
+                                        <select id="0002">
+                                            <option value="na" id="022">-</option>
+                                            <option value="mieter" id="023">Mieter</option>
+                                            <option value="landl" id="024">Vermieter</option>
+                                            <option value="klar" id="025">in Klärung</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="checkbox" id="026"></td>
+                                </tr>
+
+
+                                <tr>
+                                    <td>Jalousie / Rolläden / Klappläden</td>
+                                    <td><input type="checkbox" id="027"></td>
+                                    <td><input type="checkbox" id="028"></td>
+                                    <td><input type="checkbox" id="029"></td>
+                                    <td>
+                                        <select id="0003">
+                                            <option value="na" id="030">-</option>
+                                            <option value="mieter" id="031">Mieter</option>
+                                            <option value="landl" id="032">Vermieter</option>
+                                            <option value="klar" id="033">in Klärung</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="checkbox" id="034"></td>
+                                </tr>
+
+                                <tr>
+                                    <td>Decke</td>
+                                    <td><input type="checkbox" id="035"></td>
+                                    <td><input type="checkbox" id="036"></td>
+                                    <td><input type="checkbox" id="037"></td>
+                                    <td>
+                                        <select id="0004">
+                                            <option value="na" id="038">-</option>
+                                            <option value="mieter" id="039">Mieter</option>
+                                            <option value="landl" id="040">Vermieter</option>
+                                            <option value="klar" id="041">in Klärung</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="checkbox" id="042"></td>
+                                </tr>
+
+                                <tr>
+                                    <td>Wände / Tapeten</td>
+                                    <td><input type="checkbox" id="043"></td>
+                                    <td><input type="checkbox" id="044"></td>
+                                    <td><input type="checkbox" id="045"></td>
+                                    <td>
+                                        <select id="0005">
+                                            <option value="na" id="046">-</option>
+                                            <option value="mieter" id="047">Mieter</option>
+                                            <option value="landl" id="048">Vermieter</option>
+                                            <option value="klar" id="049">in Klärung</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="checkbox" id="050"></td>
+                                </tr>
+
+
+                                <tr>
+                                    <td>Farbe der Wände</td>
+                                    <td><input type="checkbox" id="043b"></td>
+                                    <td class="color1">weiß oder →</td>
+                                    <td colspan="3">
+                                        <div class="input-wrapper02">
+                                            <input type="text" id="wandfarbe" placeholder="" class="farbe-input"
+                                                autocomplete="off">
+                                        </div>
+                                    </td>
+                                </tr>
+
+
+
+                                <tr>
+                                    <td>Fliesenspiegel</td>
+                                    <td><input type="checkbox" id="051"></td>
+                                    <td><input type="checkbox" id="052"></td>
+                                    <td><input type="checkbox" id="053"></td>
+                                    <td>
+                                        <select id="0006">
+                                            <option value="na" id="054">-</option>
+                                            <option value="mieter" id="055">Mieter</option>
+                                            <option value="landl" id="056">Vermieter</option>
+                                            <option value="klar" id="057">in Klärung</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="checkbox" id="058"></td>
+                                </tr>
+
+                                <tr>
+                                    <td>Heizkörper / Ventile</td>
+                                    <td><input type="checkbox" id="059"></td>
+                                    <td><input type="checkbox" id="060"></td>
+                                    <td><input type="checkbox" id="061"></td>
+                                    <td>
+                                        <select id="0007">
+                                            <option value="na" id="062">-</option>
+                                            <option value="mieter" id="063">Mieter</option>
+                                            <option value="landl" id="064">Vermieter</option>
+                                            <option value="klar" id="065">in Klärung</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="checkbox" id="066"></td>
+                                </tr>
+
+                                <tr>
+                                    <td>Fußboden / Sockelleisten</td>
+                                    <td><input type="checkbox" id="067"></td>
+                                    <td><input type="checkbox" id="068"></td>
+                                    <td><input type="checkbox" id="069"></td>
+                                    <td>
+                                        <select id="0008">
+                                            <option value="na" id="070">-</option>
+                                            <option value="mieter" id="071">Mieter</option>
+                                            <option value="landl" id="072">Vermieter</option>
+                                            <option value="klar" id="073">in Klärung</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="checkbox" id="074"></td>
+                                </tr>
+
+                                <tr>
+                                    <td>Bodenbelag</td>
+                                    <td colspan="5">
+                                        <input type="text" id="fussbodenkue" placeholder="" class="farbe-input"
+                                            autocomplete="off">
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>Schränke</td>
+                                    <td><input type="checkbox" id="075"></td>
+                                    <td><input type="checkbox" id="076"></td>
+                                    <td><input type="checkbox" id="077"></td>
+                                    <td>
+                                        <select id="0009">
+                                            <option value="na" id="078">-</option>
+                                            <option value="mieter" id="079">Mieter</option>
+                                            <option value="landl" id="080">Vermieter</option>
+                                            <option value="klar" id="081">in Klärung</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="checkbox" id="082"></td>
+                                </tr>
+
+                                <tr>
+                                    <td>Arbeitsplatte</td>
+                                    <td><input type="checkbox" id="083"></td>
+                                    <td><input type="checkbox" id="084"></td>
+                                    <td><input type="checkbox" id="085"></td>
+                                    <td>
+                                        <select id="0010">
+                                            <option value="na" id="086">-</option>
+                                            <option value="mieter" id="087">Mieter</option>
+                                            <option value="landl" id="088">Vermieter</option>
+                                            <option value="klar" id="089">in Klärung</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="checkbox" id="090"></td>
+                                </tr>
+
+                                <tr>
+                                    <td>Spüle</td>
+                                    <td><input type="checkbox" id="091"></td>
+                                    <td><input type="checkbox" id="092"></td>
+                                    <td><input type="checkbox" id="093"></td>
+                                    <td>
+                                        <select id="0011">
+                                            <option value="na" id="094">-</option>
+                                            <option value="mieter" id="095">Mieter</option>
+                                            <option value="landl" id="096">Vermieter</option>
+                                            <option value="klar" id="097">in Klärung</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="checkbox" id="098"></td>
+                                </tr>
+
+                                <tr>
+                                    <td>Zapfhahn</td>
+                                    <td><input type="checkbox" id="099"></td>
+                                    <td><input type="checkbox" id="100"></td>
+                                    <td><input type="checkbox" id="101"></td>
+                                    <td>
+                                        <select id="0012">
+                                            <option value="na" id="102">-</option>
+                                            <option value="mieter" id="103">Mieter</option>
+                                            <option value="landl" id="104">Vermieter</option>
+                                            <option value="klar" id="105">in Klärung</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="checkbox" id="106"></td>
+                                </tr>
+
+                                <tr>
+                                    <td>Waschmaschinen - anschluss</td>
+                                    <td><input type="checkbox" id="107"></td>
+                                    <td><input type="checkbox" id="108"></td>
+                                    <td><input type="checkbox" id="109"></td>
+                                    <td>
+                                        <select id="0013">
+                                            <option value="na" id="110">-</option>
+                                            <option value="mieter" id="111">Mieter</option>
+                                            <option value="landl" id="112">Vermieter</option>
+                                            <option value="klar" id="113">in Klärung</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="checkbox" id="114"></td>
+                                </tr>
+
+
+
+                                <tr>
+                                    <td>Steckdosen / Lichtschalter</td>
+                                    <td><input type="checkbox" id="115"></td>
+                                    <td><input type="checkbox" id="116"></td>
+                                    <td><input type="checkbox" id="117"></td>
+                                    <td>
+                                        <select id="0014">
+                                            <option value="na" id="118">-</option>
+                                            <option value="mieter" id="119">Mieter</option>
+                                            <option value="landl" id="120">Vermieter</option>
+                                            <option value="klar" id="121">in Klärung</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="checkbox" id="122"></td>
+                                </tr>
+
+                                <tr>
+                                    <td>Herd</td>
+                                    <td><input type="checkbox" id="123"></td>
+                                    <td><input type="checkbox" id="124"></td>
+                                    <td><input type="checkbox" id="125"></td>
+                                    <td>
+                                        <select id="0015">
+                                            <option value="na" id="126">-</option>
+                                            <option value="mieter" id="127">Mieter</option>
+                                            <option value="landl" id="128">Vermieter</option>
+                                            <option value="klar" id="129">in Klärung</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="checkbox" id="130"></td>
+                                </tr>
+
+
+                                <tr>
+                                    <td>Kühlschrank</td>
+                                    <td><input type="checkbox" id="131"></td>
+                                    <td><input type="checkbox" id="132"></td>
+                                    <td><input type="checkbox" id="133"></td>
+                                    <td>
+                                        <select id="0016">
+                                            <option value="na" id="134">-</option>
+                                            <option value="mieter" id="135">Mieter</option>
+                                            <option value="landl" id="136">Vermieter</option>
+                                            <option value="klar" id="137">in Klärung</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="checkbox" id="138"></td>
+                                </tr>
+
+                                <tr>
+                                    <td>Warmwasserbereiter</td>
+                                    <td><input type="checkbox" id="139"></td>
+                                    <td><input type="checkbox" id="140"></td>
+                                    <td><input type="checkbox" id="141"></td>
+                                    <td>
+                                        <select id="0017">
+                                            <option value="na" id="142">-</option>
+                                            <option value="mieter" id="143">Mieter</option>
+                                            <option value="landl" id="144">Vermieter</option>
+                                            <option value="klar" id="145">in Klärung</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="checkbox" id="146"></td>
+                                </tr>
+
+                                <tr>
+                                    <td>Heiztherme</td>
+                                    <td><input type="checkbox" id="147"></td>
+                                    <td><input type="checkbox" id="148"></td>
+                                    <td><input type="checkbox" id="149"></td>
+                                    <td>
+                                        <select id="0018">
+                                            <option value="na" id="150">-</option>
+                                            <option value="mieter" id="151">Mieter</option>
+                                            <option value="landl" id="152">Vermieter</option>
+                                            <option value="klar" id="153">in Klärung</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="checkbox" id="154"></td>
+                                </tr>
+
+                                <tr>
+                                    <td>Anzahl Rauchwarnmelder</td>
+                                    <td colspan="5">
+                                        <div class="number-input">
+                                            <button type="button" class="number-btn minus">-</button>
+                                            <input type="number" id="rauchmelder-anzahl" min="0" max="9" value="0">
+                                            <button type="button" class="number-btn plus">+</button>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <tr class="bemerkung-row">
+                                    <td style="font-weight:600">Bemerkungen:</td>
+                                </tr>
+
+                                <tr class="bemerkung-row">
+                                    <td colspan="6">
+                                        <div class="bemerkung-container" data-bemerkung-id="bemerkung-kueche-0">
+                                            <input type="text" id="bemerkung-kueche-0" class="bemerkung-input"
+                                                placeholder="" data-raum="kueche">
+                                            <div class="bemerkung-actions">
+                                                <button type="button" class="add-bemerkung-btn">+</button>
+                                                <button type="button" class="del-bemerkung-btn"
+                                                    style="display: block;">×</button>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+
+
+
+                                <tr class="bilder-row">
+                                    <!-- <td></td> -->
+                                    <td colspan="7">
+                                        <div class="bilder-upload-container">
+                                            <button type="button" class="bilder-upload-btn">+ Bilder</button>
+                                            <div class="bilder-thumbnails"></div>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+
+
+
+
+            <div class="room-toggle" data-room="bad">
+                <div class="toggle-header">
+                    Badezimmer vorhanden?
+                    <div class="toggle-options" data-active-option="0">
+                        <div class="toggle-option active" data-value="nein">Nein</div>
+                        <div class="toggle-option" data-value="ja">Ja</div>
+                    </div>
+                </div>
+
+
+
+                <div class="room-container" id="bad-container"
+                    style="animation: 0.3s ease-in-out fadeOut; display: none;">
+                    <div class="table-container bad" id="bad-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th colspan="6" class="kueche-header">
+                                        <div class="bad-verfuegbar">
+                                            Badezimmer
+                                        </div>
+                                    </th>
+                                </tr>
+
+                                <!-- Zustandsbewertung -->
+                                <tr class="zustandszeile">
+                                    <th class="aab">allgemeiner Zustand</th>
+                                    <th class="aab">in Ordnung</th>
+                                    <th class="aab">neuwertig</th>
+                                    <th class="aab">geringe Gebrauchs - spuren</th>
+                                    <th class="aab">stärkere Gebrauchs - spuren</th>
+                                    <th class="aab">nicht renoviert</th>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td><input type="checkbox" id="boden-pb1"></td>
+                                    <td><input type="checkbox" id="boden-pb2"></td>
+                                    <td><input type="checkbox" id="boden-pb3"></td>
+                                    <td><input type="checkbox" id="boden-pb3b"></td>
+                                    <td><input type="checkbox" id="boden-pb4"></td>
+                                </tr>
+
+                                <!-- Bauteil-Überschriften -->
+                                <tr>
+                                    <th class="aab1"></th>
+                                    <th class="aab1">in Ordnung</th>
+                                    <th class="aab1">geringe Gebrauchs - spuren</th>
+                                    <th class="aab1">repa. - bedürftig</th>
+                                    <th class="aab1">Reparatur durch den Mieter oder Vermieter</th>
+                                    <th class="aab1">nicht vor handen</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <tr>
+                                    <td>Tür / Zarge / Beschläge</td>
+                                    <td><input type="checkbox" id="161"></td>
+                                    <td><input type="checkbox" id="162"></td>
+                                    <td><input type="checkbox" id="163"></td>
+                                    <td>
+                                        <select id="0019">
+                                            <option value="na" id="164">-</option>
+                                            <option value="mieter" id="165">Mieter</option>
+                                            <option value="landl" id="166">Vermieter</option>
+                                            <option value="klar" id="167">in Klärung</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="checkbox" id="168"></td>
+                                </tr>
+
+                                <tr>
+                                    <td>Zimmerschlüssel vorhanden?</td>
+                                    <td><input type="checkbox" id="keyYes2"></td>
+                                    <td class="color1">ja</td>
+                                    <td><input type="checkbox" id="keyNo2"></td>
+                                    <td class="color1">nein</td>
+                                    <td></td>
+                                </tr>
+
+                                <tr>
+                                    <td>Fenster / Beschläge / Glas</td>
+                                    <td><input type="checkbox" id="171"></td>
+                                    <td><input type="checkbox" id="172"></td>
+                                    <td><input type="checkbox" id="173"></td>
+                                    <td>
+                                        <select id="0020">
+                                            <option value="na" id="174">-</option>
+                                            <option value="mieter" id="175">Mieter</option>
+                                            <option value="landl" id="176">Vermieter</option>
+                                            <option value="klar" id="177">in Klärung</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="checkbox" id="178"></td>
+                                </tr>
+
+
+                                <tr>
+                                    <td>Jalousie / Rolläden / Klappläden</td>
+                                    <td><input type="checkbox" id="179"></td>
+                                    <td><input type="checkbox" id="180"></td>
+                                    <td><input type="checkbox" id="181"></td>
+                                    <td>
+                                        <select id="0021">
+                                            <option value="na" id="182">-</option>
+                                            <option value="mieter" id="183">Mieter</option>
+                                            <option value="landl" id="184">Vermieter</option>
+                                            <option value="klar" id="185">in Klärung</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="checkbox" id="186"></td>
+                                </tr>
+
+                                <tr>
+                                    <td>Decke</td>
+                                    <td><input type="checkbox" id="187"></td>
+                                    <td><input type="checkbox" id="188"></td>
+                                    <td><input type="checkbox" id="189"></td>
+                                    <td>
+                                        <select id="0022">
+                                            <option value="na" id="190">-</option>
+                                            <option value="mieter" id="191">Mieter</option>
+                                            <option value="landl" id="192">Vermieter</option>
+                                            <option value="klar" id="193">in Klärung</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="checkbox" id="194"></td>
+                                </tr>
+
+                                <tr>
+                                    <td>Wände / Tapeten</td>
+                                    <td><input type="checkbox" id="195"></td>
+                                    <td><input type="checkbox" id="196"></td>
+                                    <td><input type="checkbox" id="197"></td>
+                                    <td>
+                                        <select id="0023">
+                                            <option value="na" id="198">-</option>
+                                            <option value="mieter" id="199">Mieter</option>
+                                            <option value="landl" id="200">Vermieter</option>
+                                            <option value="klar" id="201">in Klärung</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="checkbox" id="202"></td>
+                                </tr>
+
+                                <tr>
+                                    <td>Farbe der Wände</td>
+                                    <td><input type="checkbox" id="202b"></td>
+                                    <td class="color1">weiß oder →</td>
+
+                                    <td colspan="3">
+                                        <div class="input-wrapper02">
+                                            <input type="text" id="wandfarbebad" placeholder="" class="farbe-input"
+                                                autocomplete="off">
+                                        </div>
+                                    </td>
+                                </tr>
+
+
+
+
+                                <tr>
+                                    <td>Fliesen</td>
+                                    <td><input type="checkbox" id="203"></td>
+                                    <td><input type="checkbox" id="204"></td>
+                                    <td><input type="checkbox" id="205"></td>
+                                    <td>
+                                        <select id="0024">
+                                            <option value="na" id="206">-</option>
+                                            <option value="mieter" id="207">Mieter</option>
+                                            <option value="landl" id="208">Vermieter</option>
+                                            <option value="klar" id="209">in Klärung</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="checkbox" id="210"></td>
+                                </tr>
+
+                                <tr>
+                                    <td>Heizkörper / Ventile</td>
+                                    <td><input type="checkbox" id="211"></td>
+                                    <td><input type="checkbox" id="212"></td>
+                                    <td><input type="checkbox" id="213"></td>
+                                    <td>
+                                        <select id="0025">
+                                            <option value="na" id="214">-</option>
+                                            <option value="mieter" id="215">Mieter</option>
+                                            <option value="landl" id="216">Vermieter</option>
+                                            <option value="klar" id="217">in Klärung</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="checkbox" id="218"></td>
+                                </tr>
+
+                                <tr>
+                                    <td>Fußboden / Sockelleisten</td>
+                                    <td><input type="checkbox" id="219"></td>
+                                    <td><input type="checkbox" id="220"></td>
+                                    <td><input type="checkbox" id="221"></td>
+                                    <td>
+                                        <select id="0026">
+                                            <option value="na" id="222">-</option>
+                                            <option value="mieter" id="223">Mieter</option>
+                                            <option value="landl" id="224">Vermieter</option>
+                                            <option value="klar" id="225">in Klärung</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="checkbox" id="226"></td>
+                                </tr>
+
+                                <tr>
+                                    <td>Bodenbelag</td>
+                                    <td colspan="5">
+                                        <input type="text" id="fussbodenbad" placeholder="" class="farbe-input"
+                                            autocomplete="off">
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>Waschbecken</td>
+                                    <td><input type="checkbox" id="227"></td>
+                                    <td><input type="checkbox" id="228"></td>
+                                    <td><input type="checkbox" id="229"></td>
+                                    <td>
+                                        <select id="0027">
+                                            <option value="na" id="230">-</option>
+                                            <option value="mieter" id="231">Mieter</option>
+                                            <option value="landl" id="232">Vermieter</option>
+                                            <option value="klar" id="233">in Klärung</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="checkbox" id="234"></td>
+                                </tr>
+
+                                <tr>
+                                    <td>Armaturen</td>
+                                    <td><input type="checkbox" id="235"></td>
+                                    <td><input type="checkbox" id="236"></td>
+                                    <td><input type="checkbox" id="237"></td>
+                                    <td>
+                                        <select id="0028">
+                                            <option value="na" id="238">-</option>
+                                            <option value="mieter" id="239">Mieter</option>
+                                            <option value="landl" id="240">Vermieter</option>
+                                            <option value="klar" id="241">in Klärung</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="checkbox" id="242"></td>
+                                </tr>
+
+                                <tr>
+                                    <td>Waschmaschinen - anschluss</td>
+                                    <td><input type="checkbox" id="243"></td>
+                                    <td><input type="checkbox" id="244"></td>
+                                    <td><input type="checkbox" id="245"></td>
+                                    <td>
+                                        <select id="0029">
+                                            <option value="na" id="246">-</option>
+                                            <option value="mieter" id="247">Mieter</option>
+                                            <option value="landl" id="248">Vermieter</option>
+                                            <option value="klar" id="249">in Klärung</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="checkbox" id="250"></td>
+                                </tr>
+
+                                <tr>
+                                    <td>WC-Sitz / Spüler usw.</td>
+                                    <td><input type="checkbox" id="251"></td>
+                                    <td><input type="checkbox" id="252"></td>
+                                    <td><input type="checkbox" id="253"></td>
+                                    <td>
+                                        <select id="0030">
+                                            <option value="na" id="254">-</option>
+                                            <option value="mieter" id="255">Mieter</option>
+                                            <option value="landl" id="256">Vermieter</option>
+                                            <option value="klar" id="257">in Klärung</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="checkbox" id="258"></td>
+                                </tr>
+
+                                <tr>
+                                    <td>Heiztherme</td>
+                                    <td><input type="checkbox" id="259"></td>
+                                    <td><input type="checkbox" id="260"></td>
+                                    <td><input type="checkbox" id="261"></td>
+                                    <td>
+                                        <select id="0031">
+                                            <option value="na" id="262">-</option>
+                                            <option value="mieter" id="263">Mieter</option>
+                                            <option value="landl" id="264">Vermieter</option>
+                                            <option value="klar" id="265">in Klärung</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="checkbox" id="266"></td>
+                                </tr>
+
+                                <tr>
+                                    <td>Ventilator</td>
+                                    <td><input type="checkbox" id="267"></td>
+                                    <td><input type="checkbox" id="268"></td>
+                                    <td><input type="checkbox" id="269"></td>
+                                    <td>
+                                        <select id="0032">
+                                            <option value="na" id="270">-</option>
+                                            <option value="mieter" id="271">Mieter</option>
+                                            <option value="landl" id="272">Vermieter</option>
+                                            <option value="klar" id="273">in Klärung</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="checkbox" id="274"></td>
+                                </tr>
+
+                                <tr>
+                                    <td>Belüftungssiebe</td>
+                                    <td><input type="checkbox" id="275"></td>
+                                    <td><input type="checkbox" id="276"></td>
+                                    <td><input type="checkbox" id="277"></td>
+                                    <td>
+                                        <select id="0033">
+                                            <option value="na" id="278">-</option>
+                                            <option value="mieter" id="279">Mieter</option>
+                                            <option value="landl" id="280">Vermieter</option>
+                                            <option value="klar" id="281">in Klärung</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="checkbox" id="282"></td>
+                                </tr>
+
+                                <tr>
+                                    <td>Spiegel / Konsole</td>
+                                    <td><input type="checkbox" id="283"></td>
+                                    <td><input type="checkbox" id="284"></td>
+                                    <td><input type="checkbox" id="285"></td>
+                                    <td>
+                                        <select id="0034">
+                                            <option value="na" id="286">-</option>
+                                            <option value="mieter" id="287">Mieter</option>
+                                            <option value="landl" id="288">Vermieter</option>
+                                            <option value="klar" id="289">in Klärung</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="checkbox" id="290"></td>
+                                </tr>
+
+                                <tr>
+                                    <td>Handtuchhalter</td>
+                                    <td><input type="checkbox" id="291"></td>
+                                    <td><input type="checkbox" id="292"></td>
+                                    <td><input type="checkbox" id="293"></td>
+                                    <td>
+                                        <select id="0035">
+                                            <option value="na" id="294">-</option>
+                                            <option value="mieter" id="295">Mieter</option>
+                                            <option value="landl" id="296">Vermieter</option>
+                                            <option value="klar" id="297">in Klärung</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="checkbox" id="298"></td>
+                                </tr>
+
+                                <tr>
+                                    <td>Toilettenpapierhalter</td>
+                                    <td><input type="checkbox" id="299"></td>
+                                    <td><input type="checkbox" id="300"></td>
+                                    <td><input type="checkbox" id="301"></td>
+                                    <td>
+                                        <select id="0036">
+                                            <option value="na" id="302">-</option>
+                                            <option value="mieter" id="303">Mieter</option>
+                                            <option value="landl" id="304">Vermieter</option>
+                                            <option value="klar" id="305">in Klärung</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="checkbox" id="306"></td>
+                                </tr>
+
+                                <tr>
+                                    <td>Badewanne</td>
+                                    <td><input type="checkbox" id="307"></td>
+                                    <td><input type="checkbox" id="308"></td>
+                                    <td><input type="checkbox" id="309"></td>
+                                    <td>
+                                        <select id="0037">
+                                            <option value="na" id="310">-</option>
+                                            <option value="mieter" id="311">Mieter</option>
+                                            <option value="landl" id="312">Vermieter</option>
+                                            <option value="klar" id="313">in Klärung</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="checkbox" id="314"></td>
+                                </tr>
+
+                                <tr>
+                                    <td>Duschbecken</td>
+                                    <td><input type="checkbox" id="315"></td>
+                                    <td><input type="checkbox" id="316"></td>
+                                    <td><input type="checkbox" id="317"></td>
+                                    <td>
+                                        <select id="0038">
+                                            <option value="na" id="318">-</option>
+                                            <option value="mieter" id="319">Mieter</option>
+                                            <option value="landl" id="320">Vermieter</option>
+                                            <option value="klar" id="321">in Klärung</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="checkbox" id="322"></td>
+                                </tr>
+
+                                <tr>
+                                    <td>Wannenbatterie / Brause</td>
+                                    <td><input type="checkbox" id="323"></td>
+                                    <td><input type="checkbox" id="324"></td>
+                                    <td><input type="checkbox" id="325"></td>
+                                    <td>
+                                        <select id="0039">
+                                            <option value="na" id="326">-</option>
+                                            <option value="mieter" id="327">Mieter</option>
+                                            <option value="landl" id="328">Vermieter</option>
+                                            <option value="klar" id="329">in Klärung</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="checkbox" id="330"></td>
+                                </tr>
+
+
+                                <tr class="bemerkung-row">
+                                    <td style="font-weight:600">Bemerkungen:</td>
+                                </tr>
+
+                                <tr class="bemerkung-row">
+                                    <td colspan="6">
+                                        <div class="bemerkung-container" data-bemerkung-id="bemerkung-bad-0">
+                                            <input type="text" id="bemerkung-bad-0" class="bemerkung-input"
+                                                placeholder="" data-raum="bad">
+                                            <div class="bemerkung-actions">
+                                                <button type="button" class="add-bemerkung-btn">+</button>
+                                                <button type="button" class="del-bemerkung-btn"
+                                                    style="display: block;">×</button>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <tr class="bilder-row">
+                                    <!-- <td></td> -->
+                                    <td colspan="7">
+                                        <div class="bilder-upload-container badezimmer">
+                                            <button type="button" class="bilder-upload-btn">+ Bilder</button>
+                                            <div class="bilder-thumbnails"></div>
+                                        </div>
+                                    </td>
+                                </tr>
+
+
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="room-toggle" data-room="wc">
+                <div class="toggle-header">
+                    separates WC vorhanden?
+                    <div class="toggle-options" data-active-option="0">
+                        <div class="toggle-option active" data-value="nein">Nein</div>
+                        <div class="toggle-option" data-value="ja">Ja</div>
+                    </div>
+                </div>
+
+
+                <div class="room-container" id="wc-container"
+                    style="animation: 0.3s ease-in-out fadeOut; display: none;">
+                    <div class="table-container wc" id="wc-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th colspan="6" class="kueche-header">
+                                        <div class="WC-verfuegbar">
+                                            separates WC
+                                        </div>
+                                    </th>
+                                </tr>
+
+                                <!-- Zustandsbewertung -->
+                                <tr class="zustandszeile">
+                                    <th class="aaw">allgemeiner Zustand</th>
+                                    <th class="aaw">in Ordnung</th>
+                                    <th class="aaw">neuwertig</th>
+                                    <th class="aaw">geringe Gebrauchs - spuren</th>
+                                    <th class="aaw">stärkere Gebrauchs - spuren</th>
+                                    <th class="aaw">nicht renoviert</th>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td><input type="checkbox" id="334"></td>
+                                    <td><input type="checkbox" id="335"></td>
+                                    <td><input type="checkbox" id="336"></td>
+                                    <td><input type="checkbox" id="3361"></td>
+                                    <td><input type="checkbox" id="boden-pb4"></td>
+                                </tr>
+
+                                <!-- Bauteil-Überschriften -->
+                                <tr>
+                                    <th class="aaw1"></th>
+                                    <th class="aaw1">in Ordnung</th>
+                                    <th class="aaw1">geringe Gebrauchs - spuren</th>
+                                    <th class="aaw1">repa. - bedürftig</th>
+                                    <th class="aaw1">Reparatur durch den Mieter oder Vermieter</th>
+                                    <th class="aaw1">nicht vor handen</th>
+                                </tr>
+                            </thead>
+
+
+
+
+                            <tbody>
+                                <!-- Sanitäre Elemente -->
+
+
+                                <tr>
+                                    <td>Tür / Zarge / Beschläge</td>
+                                    <td><input type="checkbox" id="340"></td>
+                                    <td><input type="checkbox" id="341"></td>
+                                    <td><input type="checkbox" id="342"></td>
+                                    <td>
+                                        <select id="0040">
+                                            <option value="na" id="343">-</option>
+                                            <option value="mieter" id="344">Mieter</option>
+                                            <option value="landl" id="345">Vermieter</option>
+                                            <option value="klar" id="346">in Klärung</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="checkbox" id="347"></td>
+                                </tr>
+
+                                <tr>
+                                    <td>Zimmerschlüssel vorhanden?</td>
+                                    <td><input type="checkbox" id="keyYes3"></td>
+                                    <td class="color1">ja</td>
+                                    <td><input type="checkbox" id="keyNo3"></td>
+                                    <td class="color1">nein</td>
+                                    <td></td>
+                                </tr>
+
+                                <tr>
+                                    <td>Fenster / Beschläge / Glas</td>
+                                    <td><input type="checkbox" id="350"></td>
+                                    <td><input type="checkbox" id="351"></td>
+                                    <td><input type="checkbox" id="352"></td>
+                                    <td>
+                                        <select id="0041">
+                                            <option value="na" id="353">-</option>
+                                            <option value="mieter" id="354">Mieter</option>
+                                            <option value="landl" id="355">Vermieter</option>
+                                            <option value="klar" id="356">in Klärung</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="checkbox" id="357"></td>
+                                </tr>
+
+
+                                <tr>
+                                    <td>Jalousie / Rolläden / Klappläden</td>
+                                    <td><input type="checkbox" id="358"></td>
+                                    <td><input type="checkbox" id="359"></td>
+                                    <td><input type="checkbox" id="360"></td>
+                                    <td>
+                                        <select id="0042">
+                                            <option value="na" id="361">-</option>
+                                            <option value="mieter" id="362">Mieter</option>
+                                            <option value="landl" id="363">Vermieter</option>
+                                            <option value="klar" id="364">in Klärung</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="checkbox" id="365"></td>
+                                </tr>
+
+                                <tr>
+                                    <td>Decke</td>
+                                    <td><input type="checkbox" id="366"></td>
+                                    <td><input type="checkbox" id="367"></td>
+                                    <td><input type="checkbox" id="368"></td>
+                                    <td>
+                                        <select id="0043">
+                                            <option value="na" id="369">-</option>
+                                            <option value="mieter" id="370">Mieter</option>
+                                            <option value="landl" id="371">Vermieter</option>
+                                            <option value="klar" id="372">in Klärung</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="checkbox" id="373"></td>
+                                </tr>
+
+                                <tr>
+                                    <td>Wände / Tapeten</td>
+                                    <td><input type="checkbox" id="374"></td>
+                                    <td><input type="checkbox" id="375"></td>
+                                    <td><input type="checkbox" id="376"></td>
+                                    <td>
+                                        <select id="0044">
+                                            <option value="na" id="377">-</option>
+                                            <option value="mieter" id="378">Mieter</option>
+                                            <option value="landl" id="379">Vermieter</option>
+                                            <option value="klar" id="380">in Klärung</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="checkbox" id="381"></td>
+                                </tr>
+
+                                <tr>
+                                    <td>Farbe der Wände</td>
+                                    <td><input type="checkbox" id="381b"></td>
+                                    <td class="color1">weiß oder →</td>
+
+                                    <td colspan="3">
+                                        <div class="input-wrapper02">
+                                            <input type="text" id="wandfarbewc" placeholder="" class="farbe-input"
+                                                autocomplete="off">
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>Fliesen</td>
+                                    <td><input type="checkbox" id="382"></td>
+                                    <td><input type="checkbox" id="383"></td>
+                                    <td><input type="checkbox" id="384"></td>
+                                    <td>
+                                        <select id="0045">
+                                            <option value="na" id="385">-</option>
+                                            <option value="mieter" id="386">Mieter</option>
+                                            <option value="landl" id="387">Vermieter</option>
+                                            <option value="klar" id="388">in Klärung</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="checkbox" id="389"></td>
+                                </tr>
+
+                                <tr>
+                                    <td>Heizkörper / Ventile</td>
+                                    <td><input type="checkbox" id="390"></td>
+                                    <td><input type="checkbox" id="391"></td>
+                                    <td><input type="checkbox" id="392"></td>
+                                    <td>
+                                        <select id="0046">
+                                            <option value="na" id="393">-</option>
+                                            <option value="mieter" id="394">Mieter</option>
+                                            <option value="landl" id="395">Vermieter</option>
+                                            <option value="klar" id="396">in Klärung</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="checkbox" id="397"></td>
+                                </tr>
+
+                                <tr>
+                                    <td>Fußboden / Sockelleisten</td>
+                                    <td><input type="checkbox" id="398"></td>
+                                    <td><input type="checkbox" id="399"></td>
+                                    <td><input type="checkbox" id="400"></td>
+                                    <td>
+                                        <select id="0047">
+                                            <option value="na" id="401">-</option>
+                                            <option value="mieter" id="402">Mieter</option>
+                                            <option value="landl" id="403">Vermieter</option>
+                                            <option value="klar" id="404">in Klärung</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="checkbox" id="405"></td>
+                                </tr>
+
+                                <tr>
+                                    <td>Bodenbelag</td>
+                                    <td colspan="5">
+                                        <input type="text" id="fussbodenwc" placeholder="" class="farbe-input"
+                                            autocomplete="off">
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>Waschbecken</td>
+                                    <td><input type="checkbox" id="406"></td>
+                                    <td><input type="checkbox" id="407"></td>
+                                    <td><input type="checkbox" id="408"></td>
+                                    <td>
+                                        <select id="0048">
+                                            <option value="na" id="409">-</option>
+                                            <option value="mieter" id="410">Mieter</option>
+                                            <option value="landl" id="411">Vermieter</option>
+                                            <option value="klar" id="412">in Klärung</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="checkbox" id="413"></td>
+                                </tr>
+
+                                <tr>
+                                    <td>Armaturen</td>
+                                    <td><input type="checkbox" id="414"></td>
+                                    <td><input type="checkbox" id="415"></td>
+                                    <td><input type="checkbox" id="416"></td>
+                                    <td>
+                                        <select id="0049">
+                                            <option value="na" id="417">-</option>
+                                            <option value="mieter" id="418">Mieter</option>
+                                            <option value="landl" id="419">Vermieter</option>
+                                            <option value="klar" id="420">in Klärung</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="checkbox" id="421"></td>
+                                </tr>
+
+                                <!--                               <tr>
+                                    <td>Waschmaschinen - anschluss</td>
+                                    <td><input type="checkbox" id="422"></td>
+                                    <td><input type="checkbox" id="423"></td>
+                                    <td><input type="checkbox" id="424"></td>
+                                    <td>
+                                        <select id="0050">
+                                            <option value="na" id="425">-</option>
+                                            <option value="mieter" id="426">Mieter</option>
+                                            <option value="landl" id="427">Vermieter</option>
+                                            <option value="klar" id="428">in Klärung</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="checkbox" id="429"></td>
+                                </tr> -->
+
+                                <tr>
+                                    <td>WC-Sitz / Spüler usw.</td>
+                                    <td><input type="checkbox" id="430"></td>
+                                    <td><input type="checkbox" id="431"></td>
+                                    <td><input type="checkbox" id="432"></td>
+                                    <td>
+                                        <select id="0051">
+                                            <option value="na" id="433">-</option>
+                                            <option value="mieter" id="434">Mieter</option>
+                                            <option value="landl" id="435">Vermieter</option>
+                                            <option value="klar" id="436">in Klärung</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="checkbox" id="437"></td>
+                                </tr>
+
+                                <!--               <tr>
+                                    <td>Heiztherme</td>
+                                    <td><input type="checkbox" id="438"></td>
+                                    <td><input type="checkbox" id="439"></td>
+                                    <td><input type="checkbox" id="440"></td>
+                                    <td>
+                                        <select id="0052">
+                                            <option value="na" id="441">-</option>
+                                            <option value="mieter" id="442">Mieter</option>
+                                            <option value="landl" id="443">Vermieter</option>
+                                            <option value="klar" id="444">in Klärung</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="checkbox" id="445"></td>
+                                </tr> -->
+
+                                <tr>
+                                    <td>Ventilator</td>
+                                    <td><input type="checkbox" id="446"></td>
+                                    <td><input type="checkbox" id="447"></td>
+                                    <td><input type="checkbox" id="448"></td>
+                                    <td>
+                                        <select id="0053">
+                                            <option value="na" id="449">-</option>
+                                            <option value="mieter" id="450">Mieter</option>
+                                            <option value="landl" id="451">Vermieter</option>
+                                            <option value="klar" id="452">in Klärung</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="checkbox" id="453"></td>
+                                </tr>
+
+                                <tr>
+                                    <td>Belüftungssiebe</td>
+                                    <td><input type="checkbox" id="454"></td>
+                                    <td><input type="checkbox" id="455"></td>
+                                    <td><input type="checkbox" id="456"></td>
+                                    <td>
+                                        <select id="0054">
+                                            <option value="na" id="457">-</option>
+                                            <option value="mieter" id="458">Mieter</option>
+                                            <option value="landl" id="459">Vermieter</option>
+                                            <option value="klar" id="460">in Klärung</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="checkbox" id="461"></td>
+                                </tr>
+
+                                <tr>
+                                    <td>Spiegel / Konsole</td>
+                                    <td><input type="checkbox" id="462"></td>
+                                    <td><input type="checkbox" id="463"></td>
+                                    <td><input type="checkbox" id="464"></td>
+                                    <td>
+                                        <select id="0055">
+                                            <option value="na" id="465">-</option>
+                                            <option value="mieter" id="466">Mieter</option>
+                                            <option value="landl" id="467">Vermieter</option>
+                                            <option value="klar" id="468">in Klärung</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="checkbox" id="469"></td>
+                                </tr>
+
+                                <!--             <tr>
+                                    <td>Handtuchhalter</td>
+                                    <td><input type="checkbox" id="470"></td>
+                                    <td><input type="checkbox" id="471"></td>
+                                    <td><input type="checkbox" id="472"></td>
+                                    <td>
+                                        <select id="0056">
+                                            <option value="na" id="473">-</option>
+                                            <option value="mieter" id="474">Mieter</option>
+                                            <option value="landl" id="475">Vermieter</option>
+                                            <option value="klar" id="476">in Klärung</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="checkbox" id="477"></td>
+                                </tr> -->
+
+                                <tr>
+                                    <td>Toilettenpapier - halter</td>
+                                    <td><input type="checkbox" id="478"></td>
+                                    <td><input type="checkbox" id="479"></td>
+                                    <td><input type="checkbox" id="480"></td>
+                                    <td>
+                                        <select id="0057">
+                                            <option value="na" id="481">-</option>
+                                            <option value="mieter" id="482">Mieter</option>
+                                            <option value="landl" id="483">Vermieter</option>
+                                            <option value="klar" id="484">in Klärung</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="checkbox" id="485"></td>
+                                </tr>
+
+                                <!--                <tr>
+                                    <td>Badewanne</td>
+                                    <td><input type="checkbox" id="486"></td>
+                                    <td><input type="checkbox" id="487"></td>
+                                    <td><input type="checkbox" id="488"></td>
+                                    <td>
+                                        <select id="0058">
+                                            <option value="na" id="489">-</option>
+                                            <option value="mieter" id="490">Mieter</option>
+                                            <option value="landl" id="491">Vermieter</option>
+                                            <option value="klar" id="492">in Klärung</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="checkbox" id="493"></td>
+                                </tr> -->
+
+                                <!--            <tr>
+                                    <td>Duschbecken</td>
+                                    <td><input type="checkbox" id="494"></td>
+                                    <td><input type="checkbox" id="495"></td>
+                                    <td><input type="checkbox" id="496"></td>
+                                    <td>
+                                        <select id="0059">
+                                            <option value="na" id="497">-</option>
+                                            <option value="mieter" id="498">Mieter</option>
+                                            <option value="landl" id="499">Vermieter</option>
+                                            <option value="klar" id="500">in Klärung</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="checkbox" id="501"></td>
+                                </tr> -->
+
+                                <!--             <tr>
+                                    <td>Wannenbatterie / Brause</td>
+                                    <td><input type="checkbox" id="502"></td>
+                                    <td><input type="checkbox" id="503"></td>
+                                    <td><input type="checkbox" id="504"></td>
+                                    <td>
+                                        <select id="0060">
+                                            <option value="na" id="505">-</option>
+                                            <option value="mieter" id="506">Mieter</option>
+                                            <option value="landl" id="507">Vermieter</option>
+                                            <option value="klar" id="508">in Klärung</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="checkbox" id="509"></td>
+                                </tr> -->
+
+
+
+
+                                <tr class="bemerkung-row">
+                                    <td style="font-weight:600">Bemerkungen:</td>
+                                </tr>
+
+
+                                <tr class="bemerkung-row">
+                                    <td colspan="6">
+                                        <div class="bemerkung-container" data-bemerkung-id="bemerkung-wc-0">
+                                            <input type="text" id="bemerkung-wc-0" class="bemerkung-input"
+                                                placeholder="" data-raum="wc">
+                                            <div class="bemerkung-actions">
+                                                <button type="button" class="add-bemerkung-btn">+</button>
+                                                <button type="button" class="del-bemerkung-btn"
+                                                    style="pointer-events: none; opacity:0;">×</button>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <tr class="bilder-row">
+                                    <!--  <td></td> -->
+                                    <td colspan="7">
+                                        <div class="bilder-upload-container wc">
+                                            <button type="button" class="bilder-upload-btn">+ Bilder</button>
+                                            <div class="bilder-thumbnails"></div>
+                                        </div>
+                                    </td>
+                                </tr>
+
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+
+
+
+            </div>
+
+
+
+            <div class="room-toggle" data-room="flur">
+                <div class="toggle-header">
+                    Diele / Flur vorhanden?
+                    <div class="toggle-options" data-active-option="0">
+                        <div class="toggle-option active" data-value="nein">Nein</div>
+                        <div class="toggle-option" data-value="ja">Ja</div>
+                    </div>
+                </div>
+
+                <div class="room-container" id="flur-container"
+                    style="animation: 0.3s ease-in-out fadeOut; display: none;">
+                    <div class="table-container flur" id="flur-container">
+
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th colspan="6" class="kueche-header">
+                                        <div class="flur-verfuegbar">
+                                            Diele / Flur
+                                        </div>
+                                    </th>
+                                </tr>
+
+                                <!-- Zustandsbewertung -->
+                                <tr class="zustandszeile">
+                                    <th class="aaf">allgemeiner Zustand</th>
+                                    <th class="aaf">in Ordnung</th>
+                                    <th class="aaf">neuwertig</th>
+                                    <th class="aaf">geringe Gebrauchs - spuren</th>
+                                    <th class="aaf">stärkere Gebrauchs - spuren</th>
+                                    <th class="aaf">nicht renoviert</th>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td><input type="checkbox" id="513"></td>
+                                    <td><input type="checkbox" id="514"></td>
+                                    <td><input type="checkbox" id="515"></td>
+                                    <td><input type="checkbox" id="519a"></td>
+                                    <td><input type="checkbox" id="519"></td>
+                                </tr>
+
+                                <!-- Bauteil-Überschriften -->
+                                <tr>
+                                    <th class="aaf1"></th>
+                                    <th class="aaf1">in Ordnung</th>
+                                    <th class="aaf1">geringe Gebrauchs - spuren</th>
+                                    <th class="aaf1">repa. - bedürftig</th>
+                                    <th class="aaf1">Reparatur durch den Mieter oder Vermieter</th>
+                                    <th class="aaf1">nicht vor handen</th>
+                                </tr>
+                            </thead>
+
+
+
+
+                            <tbody>
+                                <!-- Sanitäre Elemente -->
+
+
+                                <tr>
+                                    <td>Wohnungstür / Zarge / Beschläge</td>
+                                    <td><input type="checkbox" id="520"></td>
+                                    <td><input type="checkbox" id="521"></td>
+                                    <td><input type="checkbox" id="522"></td>
+                                    <td>
+                                        <select id="0061">
+                                            <option value="na" id="523">-</option>
+                                            <option value="mieter" id="524">Mieter</option>
+                                            <option value="landl" id="525">Vermieter</option>
+                                            <option value="klar" id="526">in Klärung</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="checkbox" id="527"></td>
+                                </tr>
+
+
+
+                                <tr>
+                                    <td>Klingel / Türöffner / Sprechanlage</td>
+                                    <td><input type="checkbox" id="528"></td>
+                                    <td><input type="checkbox" id="529"></td>
+                                    <td><input type="checkbox" id="530"></td>
+                                    <td>
+                                        <select id="0062">
+                                            <option value="na" id="531">-</option>
+                                            <option value="mieter" id="532">Mieter</option>
+                                            <option value="landl" id="533">Vermieter</option>
+                                            <option value="klar" id="534">in Klärung</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="checkbox" id="535"></td>
+                                </tr>
+
+                                <tr>
+                                    <td>Fenster / Beschläge / Glas</td>
+                                    <td><input type="checkbox" id="536"></td>
+                                    <td><input type="checkbox" id="537"></td>
+                                    <td><input type="checkbox" id="538"></td>
+                                    <td>
+                                        <select id="0063">
+                                            <option value="na" id="539">-</option>
+                                            <option value="mieter" id="540">Mieter</option>
+                                            <option value="landl" id="541">Vermieter</option>
+                                            <option value="klar" id="542">in Klärung</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="checkbox" id="543"></td>
+                                </tr>
+
+
+                                <tr>
+                                    <td>Decke</td>
+                                    <td><input type="checkbox" id="544"></td>
+                                    <td><input type="checkbox" id="545"></td>
+                                    <td><input type="checkbox" id="546"></td>
+                                    <td>
+                                        <select id="0064">
+                                            <option value="na" id="547">-</option>
+                                            <option value="mieter" id="548">Mieter</option>
+                                            <option value="landl" id="549">Vermieter</option>
+                                            <option value="klar" id="550">in Klärung</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="checkbox" id="551"></td>
+                                </tr>
+
+
+                                <tr>
+                                    <td>Wände / Tapeten</td>
+                                    <td><input type="checkbox" id="552"></td>
+                                    <td><input type="checkbox" id="553"></td>
+                                    <td><input type="checkbox" id="554"></td>
+                                    <td>
+                                        <select id="0065">
+                                            <option value="na" id="555">-</option>
+                                            <option value="mieter" id="556">Mieter</option>
+                                            <option value="landl" id="557">Vermieter</option>
+                                            <option value="klar" id="558">in Klärung</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="checkbox" id="559"></td>
+                                </tr>
+
+
+
+
+                                <tr>
+                                    <td>Farbe der Wände</td>
+                                    <td><input type="checkbox" id="559b"></td>
+                                    <td class="color1">weiß oder →</td>
+
+                                    <td colspan="3">
+                                        <div class="input-wrapper02">
+                                            <input type="text" id="wandfarbeflur" placeholder="" class="farbe-input"
+                                                autocomplete="off">
+                                        </div>
+                                    </td>
+                                </tr>
+
+
+
+                                <tr>
+                                    <td>Fußboden / Sockelleisten</td>
+                                    <td><input type="checkbox" id="560"></td>
+                                    <td><input type="checkbox" id="561"></td>
+                                    <td><input type="checkbox" id="562"></td>
+                                    <td>
+                                        <select id="0066">
+                                            <option value="na" id="563">-</option>
+                                            <option value="mieter" id="564">Mieter</option>
+                                            <option value="landl" id="565">Vermieter</option>
+                                            <option value="klar" id="566">in Klärung</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="checkbox" id="567"></td>
+                                </tr>
+
+                                <tr>
+                                    <td>Bodenbelag</td>
+                                    <td colspan="5">
+                                        <input type="text" id="fussbodenflur" placeholder="" class="farbe-input"
+                                            autocomplete="off">
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>Heizkörper / Ventile</td>
+                                    <td><input type="checkbox" id="568"></td>
+                                    <td><input type="checkbox" id="569"></td>
+                                    <td><input type="checkbox" id="570"></td>
+                                    <td>
+                                        <select id="0067">
+                                            <option value="na" id="571">-</option>
+                                            <option value="mieter" id="572">Mieter</option>
+                                            <option value="landl" id="573">Vermieter</option>
+                                            <option value="klar" id="574">in Klärung</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="checkbox" id="575"></td>
+                                </tr>
+
+
+                                <tr>
+                                    <td>Abstellschrank</td>
+                                    <td><input type="checkbox" id="576"></td>
+                                    <td><input type="checkbox" id="577"></td>
+                                    <td><input type="checkbox" id="578"></td>
+                                    <td>
+                                        <select id="0068">
+                                            <option value="na" id="579">-</option>
+                                            <option value="mieter" id="580">Mieter</option>
+                                            <option value="landl" id="581">Vermieter</option>
+                                            <option value="klar" id="582">in Klärung</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="checkbox" id="583"></td>
+                                </tr>
+
+
+                                <tr>
+                                    <td>Anzahl Rauchwarnmelder</td>
+                                    <td colspan="5">
+                                        <div class="number-input">
+                                            <button type="button" class="number-btn minus">-</button>
+                                            <input type="number" id="rauchmelder-anzahl2" min="0" max="9" value="0">
+                                            <button type="button" class="number-btn plus">+</button>
+                                        </div>
+                                    </td>
+                                </tr>
+
+
+                                <tr class="bemerkung-row">
+                                    <td style="font-weight:600">Bemerkungen:</td>
+                                </tr>
+
+
+
+
+
+
+                                <tr class="bemerkung-row">
+                                    <td colspan="6">
+                                        <div class="bemerkung-container" data-bemerkung-id="bemerkung-flur-0">
+                                            <input type="text" id="bemerkung-flur-0" class="bemerkung-input"
+                                                placeholder="" data-raum="flur">
+                                            <div class="bemerkung-actions">
+                                                <button type="button" class="add-bemerkung-btn">+</button>
+                                                <button type="button" class="del-bemerkung-btn"
+                                                    style="pointer-events: none; opacity:0;">×</button>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+
+
+
+
+
+
+
+
+
+
+
+                                <tr class="bilder-row">
+                                    <!-- <td></td> -->
+                                    <td colspan="7">
+                                        <div class="bilder-upload-container flur">
+                                            <button type="button" class="bilder-upload-btn">+ Bilder</button>
+                                            <div class="bilder-thumbnails"></div>
+                                        </div>
+                                    </td>
+                                </tr>
+
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="room-toggle" data-room="abstellraum">
+                <div class="toggle-header">
+                    Abstellraum vorhanden?
+                    <div class="toggle-options" data-active-option="0">
+                        <div class="toggle-option active" data-value="nein">Nein</div>
+                        <div class="toggle-option" data-value="ja">Ja</div>
+                    </div>
+
+                </div>
+
+                <div class="room-container" id="abstellraum-container"
+                    style="animation: 0.3s ease-in-out fadeOut; display: none;">
+                    <div class="table-container abstellraum" id="abstellraum-container">
+
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th colspan="6" class="abstell-header">
+                                        <div class="abstellraum-verfuegbar">
+                                            Abstellraum
+                                        </div>
+                                    </th>
+                                </tr>
+
+                                <tr>
+                                    <td colspan="1">Lage</td>
+                                    <td colspan="5" class="lage">
+                                        <input type="text" id="lageinputabstell" class="textinput">
+                                        <div id="lagecontainerabstell" class="suggestion-list"></div>
+                                    </td>
+
+
+                                </tr>
+
+                                <!-- Zustandsbewertung -->
+                                <tr class="zustandszeile">
+                                    <th class="aaabstell">allgemeiner Zustand</th>
+                                    <th class="aaabstell">in Ordnung</th>
+                                    <th class="aaabstell">neuwertig</th>
+                                    <th class="aaabstell">geringe Gebrauchs - spuren</th>
+                                    <th class="aaabstell">stärkere Gebrauchs - spuren</th>
+                                    <th class="aaabstell">nicht renoviert</th>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td><input type="checkbox" id="587"></td>
+                                    <td><input type="checkbox" id="588"></td>
+                                    <td><input type="checkbox" id="589"></td>
+                                    <td><input type="checkbox" id="5891"></td>
+                                    <td><input type="checkbox" id="593"></td>
+                                </tr>
+
+                                <!-- Bauteil-Überschriften -->
+                                <tr>
+                                    <th class="aaabstell1"></th>
+                                    <th class="aaabstell1">in Ordnung</th>
+                                    <th class="aaabstell1">geringe Gebrauchs - spuren</th>
+                                    <th class="aaabstell1">repa. - bedürftig</th>
+                                    <th class="aaabstell1">Reparatur durch den Mieter oder Vermieter</th>
+                                    <th class="aaabstell1">nicht vor handen</th>
+                                </tr>
+                            </thead>
+
+
+
+
+                            <tbody>
+                                <!-- Sanitäre Elemente -->
+
+
+                                <tr>
+                                    <td>Tür / Zarge / Beschläge</td>
+                                    <td><input type="checkbox" id="594"></td>
+                                    <td><input type="checkbox" id="595"></td>
+                                    <td><input type="checkbox" id="596"></td>
+                                    <td>
+                                        <select id="0069">
+                                            <option value="na" id="597">-</option>
+                                            <option value="mieter" id="598">Mieter</option>
+                                            <option value="landl" id="599">Vermieter</option>
+                                            <option value="klar" id="600">in Klärung</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="checkbox" id="601"></td>
+                                </tr>
+
+                                <tr>
+                                    <td>Zimmerschlüssel vorhanden?</td>
+                                    <td><input type="checkbox" id="keyYes4"></td>
+                                    <td class="color1">ja</td>
+                                    <td><input type="checkbox" id="keyNo4"></td>
+                                    <td class="color1">nein</td>
+                                    <td></td>
+                                </tr>
+
+
+                                <tr>
+                                    <td>Fenster / Beschläge / Glas</td>
+                                    <td><input type="checkbox" id="610"></td>
+                                    <td><input type="checkbox" id="611"></td>
+                                    <td><input type="checkbox" id="612"></td>
+                                    <td>
+                                        <select id="0071">
+                                            <option value="na" id="613">-</option>
+                                            <option value="mieter" id="614">Mieter</option>
+                                            <option value="landl" id="615">Vermieter</option>
+                                            <option value="klar" id="616">in Klärung</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="checkbox" id="617"></td>
+                                </tr>
+
+
+                                <tr>
+                                    <td>Decke</td>
+                                    <td><input type="checkbox" id="618"></td>
+                                    <td><input type="checkbox" id="619"></td>
+                                    <td><input type="checkbox" id="620"></td>
+                                    <td>
+                                        <select id="0072">
+                                            <option value="na" id="621">-</option>
+                                            <option value="mieter" id="622">Mieter</option>
+                                            <option value="landl" id="623">Vermieter</option>
+                                            <option value="klar" id="624">in Klärung</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="checkbox" id="625"></td>
+                                </tr>
+
+
+                                <tr>
+                                    <td>Wände / Tapeten</td>
+                                    <td><input type="checkbox" id="626"></td>
+                                    <td><input type="checkbox" id="627"></td>
+                                    <td><input type="checkbox" id="628"></td>
+                                    <td>
+                                        <select id="0073">
+                                            <option value="na" id="629">-</option>
+                                            <option value="mieter" id="630">Mieter</option>
+                                            <option value="landl" id="631">Vermieter</option>
+                                            <option value="klar" id="632">in Klärung</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="checkbox" id="633"></td>
+                                </tr>
+
+
+
+
+                                <tr>
+                                    <td>Farbe der Wände</td>
+                                    <td><input type="checkbox" id="633b"></td>
+                                    <td class="color1">weiß oder →</td>
+
+                                    <td colspan="3">
+                                        <div class="input-wrapper02">
+                                            <input type="text" id="wandfarbeabstell" placeholder="" class="farbe-input"
+                                                autocomplete="off">
+                                        </div>
+                                    </td>
+                                </tr>
+
+
+
+                                <tr>
+                                    <td>Fußboden / Sockelleisten</td>
+                                    <td><input type="checkbox" id="634"></td>
+                                    <td><input type="checkbox" id="635"></td>
+                                    <td><input type="checkbox" id="636"></td>
+                                    <td>
+                                        <select id="0074">
+                                            <option value="na" id="637">-</option>
+                                            <option value="mieter" id="638">Mieter</option>
+                                            <option value="landl" id="639">Vermieter</option>
+                                            <option value="klar" id="640">in Klärung</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="checkbox" id="641"></td>
+                                </tr>
+
+                                <tr>
+                                    <td>Bodenbelag</td>
+                                    <td colspan="5">
+                                        <input type="text" id="fussbodenabstell" placeholder="" class="farbe-input"
+                                            autocomplete="off">
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>Heizkörper / Ventile</td>
+                                    <td><input type="checkbox" id="642"></td>
+                                    <td><input type="checkbox" id="643"></td>
+                                    <td><input type="checkbox" id="644"></td>
+                                    <td>
+                                        <select id="0075">
+                                            <option value="na" id="645">-</option>
+                                            <option value="mieter" id="646">Mieter</option>
+                                            <option value="landl" id="647">Vermieter</option>
+                                            <option value="klar" id="648">in Klärung</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="checkbox" id="649"></td>
+                                </tr>
+
+
+
+
+
+                                <tr>
+                                    <td>Anzahl Rauchwarnmelder</td>
+                                    <td colspan="5">
+                                        <div class="number-input">
+                                            <button type="button" class="number-btn minus">-</button>
+                                            <input type="number" id="rauchmelder-anzahl3" min="0" max="9" value="0">
+                                            <button type="button" class="number-btn plus">+</button>
+                                        </div>
+                                    </td>
+                                </tr>
+
+
+
+
+                                <tr class="bemerkung-row">
+                                    <td style="font-weight:600">Bemerkungen:</td>
+                                </tr>
+
+
+                                <tr class="bemerkung-row">
+                                    <td colspan="6">
+                                        <div class="bemerkung-container" data-bemerkung-id="bemerkung-abstellraum-0">
+                                            <input type="text" id="bemerkung-abstellraum-0" class="bemerkung-input"
+                                                placeholder="" data-raum="abstellraum" value="a1">
+                                            <div class="bemerkung-actions">
+                                                <button type="button" class="add-bemerkung-btn">+</button>
+                                                <button type="button" class="del-bemerkung-btn"
+                                                    style="display: block;">×</button>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+
+
+                                <tr class="bilder-row">
+                                    <!--  <td></td> -->
+                                    <td colspan="7">
+                                        <div class="bilder-upload-container flur">
+                                            <button type="button" class="bilder-upload-btn">+ Bilder</button>
+                                            <div class="bilder-thumbnails"></div>
+                                        </div>
+                                    </td>
+                                </tr>
+
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="room-toggle" data-room="nebenraum">
+                <div class="toggle-header">
+                    Nebenräume:
+                    <div class="toggle-options opacity" data-active-option="0">
+                        <div class="toggle-option active" data-value="nein">Nein</div>
+                        <div class="toggle-option" data-value="ja">Ja</div>
+                    </div>
+                </div>
+
+
+
+                <div class="room-container" id="nebenraum-container"
+                    style="animation: 0.3s ease-in-out fadeOut; display: none;">
+                    <div class="table-container nebenraum" id="nebenraum-container">
+                        <tr">
+                        </tr">
+                        <table>
+
+                            <tbody>
+                                <tr>
+                                    <th colspan="6" class="kueche-header">
+                                        <div class="nebenraum-verfuegbar">
+                                            Nebenräume
+                                        </div>
+                                    </th>
+                                </tr>
+                            </tbody>
+
+
+
+                            <tbody>
+                                <tr>
+                                    <th style="background-color: #80a0c6">Bereich</th>
+                                    <th style="background-color: #80a0c6">in Ordnung</th>
+                                    <th style="background-color: #80a0c6">geringe Gebrauchs - spuren</th>
+                                    <th style="background-color: #80a0c6">repa. - bedürftig</th>
+                                    <th style="background-color: #80a0c6">Reparatur durch</th>
+                                    <th style="background-color: #80a0c6">nicht vorhanden</th>
+                                </tr>
+                                <tr>
+                                    <td>Balkon / Terrasse / Loggia</td>
+                                    <td><input type="checkbox" id="661"></td>
+                                    <td><input type="checkbox" id="662"></td>
+                                    <td><input type="checkbox" id="663"></td>
+                                    <td>
+                                        <select id="0077">
+                                            <option>-</option>
+                                            <option>Mieter</option>
+                                            <option>Vermieter</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="checkbox" id="664"></td>
+                                </tr>
+                                <tr>
+                                    <td>Keller</td>
+                                    <td><input type="checkbox" id="665"></td>
+                                    <td><input type="checkbox" id="666"></td>
+                                    <td><input type="checkbox" id="667"></td>
+                                    <td><select id="0078">
+                                            <option>-</option>
+                                            <option>Mieter</option>
+                                            <option>Vermieter</option>
+                                        </select></td>
+                                    <td><input type="checkbox" id="668"></td>
+                                </tr>
+                                <tr>
+                                    <td>Dachboden</td>
+                                    <td><input type="checkbox" id="669"></td>
+                                    <td><input type="checkbox" id="670"></td>
+                                    <td><input type="checkbox" id="671"></td>
+                                    <td><select id="0079">
+                                            <option>-</option>
+                                            <option>Mieter</option>
+                                            <option>Vermieter</option>
+                                        </select></td>
+                                    <td><input type="checkbox" id="672"></td>
+                                </tr>
+                                <tr>
+                                    <td>Garage / Stellplatz</td>
+                                    <td><input type="checkbox" id="673"></td>
+                                    <td><input type="checkbox" id="674"></td>
+                                    <td><input type="checkbox" id="675"></td>
+                                    <td><select id="0080">
+                                            <option>-</option>
+                                            <option>Mieter</option>
+                                            <option>Vermieter</option>
+                                        </select></td>
+                                    <td><input type="checkbox" id="676"></td>
+                                </tr>
+
+
+
+
+                                <tr class="bemerkung-row">
+                                    <td style="font-weight:600">Bemerkungen:</td>
+                                </tr>
+
+
+
+
+
+                                <tr class="bemerkung-row">
+                                    <td colspan="6">
+                                        <div class="bemerkung-container" data-bemerkung-id="bemerkung-nebenraum-0">
+                                            <input type="text" id="bemerkung-nebenraum-0" class="bemerkung-input"
+                                                placeholder="" data-raum="nebenraum">
+                                            <div class="bemerkung-actions">
+                                                <button type="button" class="add-bemerkung-btn">+</button>
+                                                <button type="button" class="del-bemerkung-btn"
+                                                    style="pointer-events: none; opacity:0;">×</button>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+
+
+
+
+
+
+
+                                <tr class="bilder-row">
+                                    <td colspan="7">
+                                        <div class="bilder-upload-container nebenraum">
+                                            <button type="button" class="bilder-upload-btn">+ Bilder</button>
+                                            <div class="bilder-thumbnails"></div>
+                                        </div>
+                                    </td>
+                                </tr>
+
+
+
+                            </tbody>
+
+
+
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+
+
+
+
+            <div class="table-container zimmer-n">
+            </div>
+
+
+            <div class="addzimmer" id="adzimmer">
+                <button id="addzimmert"><i class="fas fa-door-open"></i>+ Zimmer</button>
+            </div>
+
+
+
+
+        </div>
+
+        <div id="regelungen">
+            <div class="rooms">
+
+                <table>
+                    <tbody>
+                        <tr>
+                            <th colspan="7" class="header-regel">
+                                <div>Regelung Mängelbeseitigung</div>
+                            </th>
+                        </tr>
+
+                        <!-- Header für die Optionsspalten -->
+                        <tr class="options-header">
+                            <td width="50%">Beschreibung</td>
+                            <td width="10%"></td>
+                            <td width="10%">Ja</td>
+                            <td width="10%"></td>
+                            <td width="10%">Nein</td>
+                            <td width="10%"></td>
+                            <td width="10%">nicht zutreffend</td>
+                        </tr>
+
+                        <tr>
+                            <td>Der ausziehende Mieter erkennt die in diesem Protokoll aufgeführten Mängel an und...
+                            </td>
+                            <td></td>
+                            <td><input type="checkbox" id="678"></td>
+                            <td></td>
+                            <td><input type="checkbox" id="679"></td>
+                            <td></td>
+                            <td><input type="checkbox" id="680"></td>
+                        </tr>
+
+                        <tr>
+                            <td>...verpflichtet sich für die Beseitigung erforderlichen Arbeiten bis zum auf seine
+                                Kosten auszuführen oder ausführen zu lassen oder...</td>
+                            <td></td>
+                            <td><input type="checkbox" id="681"></td>
+                            <td></td>
+                            <td><input type="checkbox" id="682"></td>
+                            <td></td>
+                            <td><input type="checkbox" id="683"></td>
+                        </tr>
+
+                        <tr>
+                            <td>...ermächtigt den Vermieter, die erforderlichen Arbeiten zu beauftragen. Er verpflichtet
+                                sich, die dadurch entstehenden Kosten nach Rechnungsstellung zu bezahlen, ggf. mit der
+                                Mietsicherheit verrechnen zu lassen oder...</td>
+                            <td></td>
+                            <td><input type="checkbox" id="684"></td>
+                            <td></td>
+                            <td><input type="checkbox" id="685"></td>
+                            <td></td>
+                            <td><input type="checkbox" id="686"></td>
+                        </tr>
+
+                        <tr>
+                            <td>...wird diese Verpflichtung durch Zahlung eines Pauschalbetrages von € abgegolten →</td>
+                            <td><input type="number" id="687" class="euro">
+                            </td>
+
+                            <td><input type="checkbox" id="688"></td>
+                            <td></td>
+                            <td><input type="checkbox" id="689"></td>
+                            <td></td>
+                            <td><input type="checkbox" id="689b"></td>
+                        </tr>
+
+                        <tr class="bemerkung-row">
+                            <td style="font-weight:bold;">Bemerkungen zur Mängelbeseitigung:</td>
+                        </tr>
+
+
+                        <tr class="bemerkung-row">
+                            <td colspan="7">
+                                <div class="bemerkung-container" data-bemerkung-id="bemerkung-regelungen-000">
+                                    <input type="text" id="bemerkung-regelungen-000" class="bemerkung-input"
+                                        placeholder="" data-raum="regelungen">
+                                    <div class="bemerkung-actions">
+                                        <button type="button" class="add-bemerkung-btn">+</button>
+                                        <button type="button" class="del-bemerkung-btn"
+                                            style="display: block;">×</button>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr class="bemerkung-row">
+                            <td colspan="7">
+                                <div class="bemerkung-container" data-bemerkung-id="bemerkung-regelungen-00">
+                                    <input type="text" id="bemerkung-regelungen-00" class="bemerkung-input"
+                                        placeholder="" data-raum="regelungen">
+                                    <div class="bemerkung-actions">
+                                        <button type="button" class="add-bemerkung-btn">+</button>
+                                        <button type="button" class="del-bemerkung-btn"
+                                            style="display: block;">×</button>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+
+
+                        <tr class="bemerkung-row">
+                            <td colspan="7">
+                                <div class="bemerkung-container" data-bemerkung-id="bemerkung-regelungen-0">
+                                    <input type="text" id="bemerkung-regelungen-0" class="bemerkung-input"
+                                        placeholder="" data-raum="regelungen">
+                                    <div class="bemerkung-actions">
+                                        <button type="button" class="add-bemerkung-btn">+</button>
+                                        <button type="button" class="del-bemerkung-btn"
+                                            style="display: block;">×</button>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+
+
+
+
+
+
+
+
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="weiterebemerkungen">
+            <div class="rooms">
+
+                <table>
+                    <tbody>
+
+                        <tr>
+                            <th colspan="6" class="header-further">
+                                <div>
+                                    weitere sonstige Bemerkungen
+                                </div>
+                            </th>
+
+                        </tr>
+                        <tr>
+                            <th></th>
+                            <th style="text-align:center;"></th>
+
+                        </tr>
+
+                        <tr>
+                            <td>Dieses Protokoll ist Bestandteil des Mietvertrags (bei Einzug)</td>
+                            <td class="checkbox-cell" colspan="2">
+                                <div class="checkbox-group" style="display: flex; gap: 15px;">
+                                    <label style="display: flex; align-items: center; gap: 5px;">
+                                        <input type="checkbox" id="691" name="protokoll_ja" value="ja"> Ja
+                                    </label>
+                                </div>
+                            </td>
+                        </tr>
+
+
+                        <tr class="bemerkung-row">
+                            <td colspan="7">
+                                <div class="bemerkung-container" data-bemerkung-id="bemerkung-weitere-000">
+                                    <input type="text" id="bemerkung-weitere-000" class="bemerkung-input" placeholder=""
+                                        data-raum="weitere">
+                                    <div class="bemerkung-actions">
+                                        <button type="button" class="add-bemerkung-btn">+</button>
+                                        <button type="button" class="del-bemerkung-btn"
+                                            style="display: block;">×</button>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+
+
+
+                        <tr class="bemerkung-row">
+                            <td colspan="7">
+                                <div class="bemerkung-container" data-bemerkung-id="bemerkung-weitere-00">
+                                    <input type="text" id="bemerkung-weitere-00" class="bemerkung-input" placeholder=""
+                                        data-raum="weitere">
+                                    <div class="bemerkung-actions">
+                                        <button type="button" class="add-bemerkung-btn">+</button>
+                                        <button type="button" class="del-bemerkung-btn"
+                                            style="display: block;">×</button>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="bemerkung-row">
+                            <td colspan="7">
+                                <div class="bemerkung-container" data-bemerkung-id="bemerkung-weitere-0">
+                                    <input type="text" id="bemerkung-weitere-0" class="bemerkung-input" placeholder=""
+                                        data-raum="weitere">
+                                    <div class="bemerkung-actions">
+                                        <button type="button" class="add-bemerkung-btn">+</button>
+                                        <button type="button" class="del-bemerkung-btn"
+                                            style="display: block;">×</button>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+
+
+
+
+
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+
+        <div id="sign">
+
+            <div class="signContainer">
+
+                <table>
+
+                    <tbody>
+                        <tr>
+                            <th class="header-further">
+                                Unterschriften
+                            </th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+
+                        <tr class="signature-data-row">
+                            <td class="signature-label signature-col-1">Objekt</td>
+                            <td class="signature-input signature-col-2">
+                                <input type="text" id="objektclon" class="textinput">
+                            </td>
+                            <td class="signature-label signature-col-3">PLZ / Ort</td>
+                            <td class="signature-input signature-col-4">
+                                <input type="text" id="ortclon" class="textinput">
+                            </td>
+                        </tr>
+                        <tr class="signature-data-row">
+                            <td class="signature-label signature-col-1">Lage</td>
+                            <td class="signature-input signature-col-2">
+                                <input type="text" id="lageclon" class="textinput">
+                            </td>
+                            <td class="signature-label signature-col-3">Mieternummer</td>
+                            <td class="signature-input signature-col-4">
+                                <input type="text" id="mietidtclon" class="textinput">
+                            </td>
+                        </tr>
+                        <tr class="signature-data-row">
+                            <td class="signature-label signature-col-1">Datum</td>
+                            <td class="signature-input signature-col-2">
+                                <input type="date" id="datum2" class="dateinput">
+                            </td>
+                            <td class="signature-col-3"></td>
+                            <td class="signature-col-4"></td>
+                        </tr>
+                        <tr class="signature-spacer-row">
+                            <td colspan="4" class="signature-spacer">&nbsp;</td>
+                        </tr>
+
+                        <tr>
+                            <td colspan="4">Dieses Protokoll erkennen die Unterzeichner an. Es ist Bestandteil des
+                                Mieterverhältnisses / Mietvertrags.</td>
+                        </tr>
+
+                        <!--    <tr>
+                            <td colspan="4">&nbsp;</td>
+                        </tr> -->
+
+                        <tr>
+                            <td colspan="4">Info: Für Ummeldungen beim Energieversorger sind die Mieter
+                                zuständig!</td>
+                        </tr>
+
+                        <!--       <tr>
+                            <td colspan="4">&nbsp;</td>
+                        </tr> -->
+
+
+                        <tr>
+                            <td>Protokoll ausgefüllt von</td>
+                            <td>
+                                <div>
+                                    <input type="text" id="firma1" class="textinput bemerkung-container">
+
+                                    <div id="name-suggestions-container" class="suggestion-list" style="display: none;">
+                                    </div>
+                                </div>
+                            </td>
+                            <td>Firma</td>
+                            <td>
+
+                                <input type="text" id="firma1b" value="Sauer Immobilien GmbH" class="textinput">
+
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="landlord-signature-section" id="landlord-signature-section">
+                <div class="landlord-signature-canvas-container">
+                    <canvas id="landlord-signature-canvas" width="666" height="222"
+                        style="border:1px solid #000; touch-action: none;"></canvas>
+                    <p>Vermieter <span class="signature-name" id="landlord-signature-name"></span></p>
+                    <div>
+                        <button type="button" id="landlord-clear-signature" class="delete-key-btn">x</button>
+                    </div>
+                </div>
+            </div>
+            <div class="signtenant" id="signtenant1"></div>
+
+        </div>
+
+        <div class="bildergalerie-container">
+
+            <h3 id="kueche-galerie-title" style="display: none;"></h3>
+            <div class="kueche-galerie" id="kueche-galerie" style="display: none;"></div>
+
+            <h3 id="bad-galerie-title" style="display: none;"></h3>
+            <div class="bad-galerie" id="bad-galerie" style="display: none;"></div>
+
+            <h3 id="wc-galerie-title" style="display: none;"></h3>
+            <div class="wc-galerie" id="wc-galerie" style="display: none;"></div>
+
+            <h3 id="flur-galerie-title" style="display: none;"></h3>
+            <div class="flur-galerie" id="flur-galerie" style="display: none;"></div>
+
+            <h3 id="abstellraum-galerie-title" style="display: none;"></h3>
+            <div class="abstellraum-galerie" id="abstellraum-galerie" style="display: none;"></div>
+
+            <h3 id="nebenraum-galerie-title" style="display: none;"></h3>
+            <div class="nebenraum-galerie" id="nebenraum-galerie" style="display: none;"></div>
+
+            <div id="zimmer-galerien-container"></div>
+        </div>
+    </div>
+
+    <div id="pdf-modal-overlay" class="pdf-modal-overlay" style="display: none;">
+        <div class="pdf-modal">
+            <div class="pdf-modal-header">
+                <h3 class="pdf-modal-title">PDF wird erstellt</h3>
+                <button class="pdf-modal-close">×</button>
+            </div>
+            <div class="pdf-progress-container">
+                <div id="pdf-progress-bar" class="pdf-progress-bar" style="width: 0%">0%</div>
+            </div>
+            <div id="pdf-status-message" class="pdf-status-message"></div>
+        </div>
+    </div>
+
+    <div id="suggestionList" style="display: none;"></div>
+
+
+
+    <div style="display: none; transition: opacity 0.5s; opacity: 0;"><span
+            style="position: absolute; top: 5px; right: 10px; cursor: pointer; font-size: 1rem;">×</span></div>
+
+    <script src="globalImageLimit.js"></script>
+
+</body>
+
+</html>
+
+
